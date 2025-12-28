@@ -7,7 +7,7 @@ kubectl apply -k kustomize/cn-accounts-backup
 kubectl delete -k kustomize/cn-accounts-backup
 
 kubectl apply -k kustomize/cn-lms-prod
-kubectl apply -k kustomize/cn-lms-dev
+kubectl delete -k kustomize/cn-lms-dev
 kubectl apply -k kustomize/cn-mattermost
 kubectl apply -k kustomize/cn-ch-mattermost
 kubectl apply -k kustomize/cn-mixeway-flow
