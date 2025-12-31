@@ -5,6 +5,7 @@ namespace: monitoring
 
 resources:
   - podmonitor.yaml
+  - otel-podmonitor.yaml
 
 configMapGenerator:
   - name: grafana-dashboards-postgres
