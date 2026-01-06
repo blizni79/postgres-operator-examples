@@ -32,9 +32,9 @@ spec:
         parameters:
           pg_hba:
             - "hostnossl all all all md5"
-  monitoring:
-    pgmonitor:
-      exporter: {}
+  # monitoring:
+    # pgmonitor:
+    #   exporter: {}  # Disabled - postgres_exporter not supported for pg18, use OTel instead
   backups:
     pgbackrest:
       repos:

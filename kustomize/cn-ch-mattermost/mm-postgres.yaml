@@ -25,9 +25,9 @@ spec:
         my-label: mm-mattermost
     type: NodePort
     nodePort: 31002
-  monitoring:
-    pgmonitor:
-      exporter: {}
+  # monitoring:
+    # pgmonitor:
+    #   exporter: {}  # Disabled - postgres_exporter not supported for pg18, use OTel instead
   backups:
     pgbackrest:
       repos:
