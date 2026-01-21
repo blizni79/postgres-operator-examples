@@ -25,9 +25,19 @@ spec:
         my-label: mixeway-flow
     type: LoadBalancer
     # nodePort: 31002
-  # monitoring:
-    # pgmonitor:
-    #   exporter: {}  # Disabled - postgres_exporter not supported for pg18, use OTel instead
+  monitoring:
+    pgmonitor:
+      exporter:
+        image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-exporter:ubi9-0.18.1-2550
+  patroni:
+    dynamicConfiguration:
+      postgresql:
+        pg_hba:
+          - host all ccp_monitoring 127.0.0.0/8 scram-sha-256
+          - host all ccp_monitoring ::1/128 scram-sha-256
+          - host all ccp_monitoring all reject
+          - local all all peer
+          - host all all 0.0.0.0/0 md5
   backups:
     pgbackrest:
       repos:

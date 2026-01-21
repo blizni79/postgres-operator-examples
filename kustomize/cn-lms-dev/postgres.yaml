@@ -29,12 +29,15 @@ spec:
   patroni:
     dynamicConfiguration:
       postgresql:
-        parameters:
-          pg_hba:
-            - "hostnossl all all all md5"
-  # monitoring:
-    # pgmonitor:
-    #   exporter: {}  # Disabled - postgres_exporter not supported for pg18, use OTel instead
+        pg_hba:
+          - host all ccp_monitoring 127.0.0.0/8 scram-sha-256
+          - host all ccp_monitoring ::1/128 scram-sha-256
+          - host all ccp_monitoring all reject
+          - hostnossl all all all md5
+  monitoring:
+    pgmonitor:
+      exporter:
+        image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-exporter:ubi9-0.18.1-2550
   backups:
     pgbackrest:
       repos:
