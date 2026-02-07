@@ -16,7 +16,6 @@ spec:
     - name: keycloak
       databases:
         - keycloak
-      options: 'SUPERUSER'
   
   service:
     metadata:

@@ -12,6 +12,7 @@ spec:
       operator: Exists
     - key: postgres-operator.crunchydata.com/role
       operator: Exists
+  namespaceSelector: {}
   podMetricsEndpoints:
   - port: exporter
     interval: 15s
