@@ -72,7 +72,7 @@
       "collapsed": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 1,
@@ -86,7 +86,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "prometheus"
           },
           "refId": "A"
         }
@@ -97,7 +97,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -158,9 +158,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "prometheus"
           },
-          "expr": "count(group by (kubernetes_namespace)(pg_up{pg_cluster!=''}) or group by (kubernetes_namespace)(patroni_postgres_running{pg_cluster!=''}))",
+          "expr": "count(group by (namespace)(pg_up{pg_cluster!=''}) or group by (namespace)(pg_up{pg_cluster!=''}))",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -175,7 +175,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -238,9 +238,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "prometheus"
           },
-          "expr": "sum(group by (pg_cluster)(pg_up{pg_cluster!=''}) or group by (pg_cluster)(patroni_postgres_running{pg_cluster!=''}))",
+          "expr": "sum(group by (pg_cluster)(pg_up{pg_cluster!=''}) or group by (pg_cluster)(pg_up{pg_cluster!=''}))",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -255,7 +255,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -318,9 +318,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "prometheus"
           },
-          "expr": "sum(count(pg_up{pg_cluster!=''})) + sum(count(patroni_postgres_running{pg_cluster!=''}))",
+          "expr": "sum(count(pg_up{pg_cluster!=''})) + sum(count(pg_up{pg_cluster!=''}))",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -336,7 +336,7 @@
       "collapsed": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 1,
@@ -350,7 +350,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "prometheus"
           },
           "refId": "A"
         }
@@ -361,7 +361,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -441,7 +441,7 @@
           ],
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "prometheus"
           },
           "dsType": "elasticsearch",
           "expr": "sum(ALERTS{alertstate=\"firing\",severity=\"critical\"} > 0) OR on() vector(0)",
@@ -466,7 +466,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -526,7 +526,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "prometheus"
           },
           "expr": "sum(ALERTS{alertstate=\"firing\",severity=\"warning\"} > 0) OR on() vector(0)",
           "format": "time_series",
@@ -543,7 +543,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -605,7 +605,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "prometheus"
           },
           "expr": "sum(ALERTS{alertstate=\"firing\",severity=\"info\"} > 0) OR on() vector(0)",
           "format": "time_series",
@@ -622,7 +622,7 @@
       "collapsed": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "prometheus"
       },
       "gridPos": {
         "h": 1,
@@ -636,7 +636,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "prometheus"
           },
           "refId": "A"
         }
@@ -647,7 +647,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -791,7 +791,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "prometheus"
           },
           "expr": "ALERTS{alertstate='firing'} > 0",
           "format": "table",
@@ -822,11 +822,11 @@
               "fs_type": true,
               "instance": true,
               "job": true,
-              "kubernetes_namespace": true,
               "mount_point": true,
               "server": true,
               "service": true,
-              "severity_num": false
+              "severity_num": false,
+              "namespace": true
             },
             "indexByName": {
               "Time": 0,
@@ -839,13 +839,13 @@
               "instance": 10,
               "ip": 11,
               "job": 12,
-              "kubernetes_namespace": 13,
               "pg_cluster": 6,
               "pod": 8,
               "role": 14,
               "service": 15,
               "severity": 2,
-              "severity_num": 1
+              "severity_num": 1,
+              "namespace": 13
             },
             "renameByName": {
               "Time": "",
@@ -861,7 +861,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -999,7 +999,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "prometheus"
           },
           "expr": "ALERTS{alertstate=\"pending\"}",
           "format": "table",
@@ -1021,8 +1021,8 @@
               "exp_type": true,
               "instance": true,
               "job": true,
-              "kubernetes_namespace": true,
-              "service": true
+              "service": true,
+              "namespace": true
             },
             "indexByName": {
               "Time": 0,
@@ -1035,13 +1035,13 @@
               "instance": 9,
               "ip": 11,
               "job": 12,
-              "kubernetes_namespace": 13,
               "pg_cluster": 6,
               "pod": 10,
               "role": 14,
               "service": 15,
               "severity": 2,
-              "severity_num": 1
+              "severity_num": 1,
+              "namespace": 13
             },
             "renameByName": {}
           }

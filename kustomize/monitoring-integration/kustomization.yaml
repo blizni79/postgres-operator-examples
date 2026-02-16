@@ -11,12 +11,10 @@ configMapGenerator:
   - name: grafana-dashboards-postgres
     files:
       - dashboards/pgbackrest.json
-      - dashboards/pgbouncer_direct.json
       - dashboards/pod_details.json
       - dashboards/postgresql_details.json
       - dashboards/postgresql_overview.json
       - dashboards/postgresql_service_health.json
-      - dashboards/query_statistics.json
       - dashboards/prometheus_alerts.json
     options:
       labels:

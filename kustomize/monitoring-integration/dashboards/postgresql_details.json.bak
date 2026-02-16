@@ -79,7 +79,105 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "links": [
+            {
+              "title": "pgBackrest",
+              "url": "/d/2fcFZ6PGk/pgbackrest?${__all_variables}"
+            }
+          ],
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#56A64B",
+                "value": null
+              },
+              {
+                "color": "#FF9830",
+                "value": 86400
+              },
+              {
+                "color": "#E02F44",
+                "value": 172800
+              }
+            ]
+          },
+          "unit": "dtdurations"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 27,
+      "links": [
+        {
+          "title": "pgBackRest",
+          "url": "/d/2fcFZ6PGk/pgbackrest?${__all_variables}"
+        }
+      ],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "min"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.13",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "expr": "min((ccp_backrest_last_incr_backup_time_since_completion_seconds{pg_cluster=\"[[cluster]]\"} + on(job,instance) group_left() (ccp_is_in_recovery_status == 2)) or (ccp_backrest_last_diff_backup_time_since_completion_seconds{pg_cluster=\"[[cluster]]\"} + on(job,instance) group_left() (ccp_is_in_recovery_status == 2)) or (ccp_backrest_last_full_backup_time_since_completion_seconds{pg_cluster=\"[[cluster]]\"} + on(job,instance) group_left() (ccp_is_in_recovery_status == 2)))",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "[[cluster]] : Backup Status",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -149,9 +247,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum(pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\", state=\"active\"})*100 /sum(pg_settings_max_connections{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\", state=\"active\"})*100 /sum(pg_settings_max_connections{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}) or sum(ccp_pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\", state=\"active\"})*100 /sum(ccp_connection_stats_max_connections{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
           "format": "time_series",
           "hide": false,
           "instant": true,
@@ -169,7 +267,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -239,9 +337,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum(pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle in transaction\"})/sum(pg_settings_max_connections{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle in transaction\"})/sum(pg_settings_max_connections{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}) or sum(ccp_pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle in transaction\"})/sum(ccp_connection_stats_max_connections{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -256,7 +354,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -327,9 +425,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "max(pg_stat_activity_max_tx_duration{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "max(abs(ccp_connection_stats_max_idle_in_txn_time{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}))",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -338,13 +436,13 @@
           "refId": "B"
         }
       ],
-      "title": "Max Transaction Duration",
+      "title": "Max Idle In Transaction Time",
       "type": "gauge"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -414,9 +512,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum(pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle\"})*100/sum(pg_settings_max_connections{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle\"})*100/sum(pg_settings_max_connections{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}) or sum(ccp_pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle\"})*100/sum(ccp_connection_stats_max_connections{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -433,7 +531,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -503,7 +601,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
           "expr": "max(ccp_transaction_wraparound_percent_towards_wraparound{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
           "format": "time_series",
@@ -522,7 +620,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -593,7 +691,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
           "expr": "sum(pg_stat_database_blks_hit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})*100/sum(pg_stat_database_blks_hit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}+pg_stat_database_blks_read{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
           "format": "time_series",
@@ -612,7 +710,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -696,7 +794,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
           "expr": "sum(irate(pg_stat_database_xact_commit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m])) + sum(irate(pg_stat_database_xact_rollback{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
           "format": "time_series",
@@ -707,6 +805,21 @@
           "metric": "ccp_stat_database_tup_fetched",
           "refId": "A",
           "step": 2
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "expr": "sum(irate(ccp_pg_stat_statements_total_calls_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\"}[5m]))",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "Queries",
+          "metric": "ccp_stat_database_tup_fetched",
+          "refId": "B",
+          "step": 2
         }
       ],
       "title": "Activity -  [[pod]]-[[datname]]",
@@ -715,7 +828,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -799,9 +912,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum by (state) (pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle\"})",
+          "expr": "sum by (state) (pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle\"}) or sum by (state) (ccp_pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle\"})",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -814,9 +927,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum by (state) (pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle in transaction\"})",
+          "expr": "sum by (state) (pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle in transaction\"}) or sum by (state) (ccp_pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle in transaction\"})",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -826,9 +939,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum by (state) (pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"active\"})",
+          "expr": "sum by (state) (pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"active\"}) or sum by (state) (ccp_pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"active\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "active",
@@ -841,7 +954,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -925,7 +1038,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
           "expr": "sum(pg_database_size_bytes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})/(1024*1024)",
           "format": "time_series",
@@ -937,12 +1050,12 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
           "expr": "pg_database_size_bytes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}/(1024*1024)",
           "format": "time_series",
           "intervalFactor": 2,
-          "legendFormat": "{{datname}} ({{pod}})",
+          "legendFormat": "{{dbname}} ({{pod}})",
           "refId": "A"
         }
       ],
@@ -952,7 +1065,171 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Max: ccp_monitoring(postgres)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/Max:/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#FF9830",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/Avg:/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#5794F2",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 13
+      },
+      "id": 31,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "width": 150
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "7.4.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "expr": "max(ccp_pg_stat_statements_total_mean_exec_time_ms{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\", dbname=~\"[[datname]]\"}) without (instance,ip)",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Avg: {{exported_role}}({{dbname}})",
+          "metric": "ccp_stat_database_tup_fetched",
+          "refId": "A",
+          "step": 2
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "expr": "max(ccp_pg_stat_statements_top_max_exec_time_ms{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\"}) without (instance,ip,query,queryid)",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Max: {{exported_role}}({{dbname}})",
+          "metric": "ccp_stat_database_tup_fetched",
+          "refId": "B",
+          "step": 2
+        }
+      ],
+      "title": "Query Duration - [[pod]]-[[datname]]",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1038,7 +1315,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
           "expr": "sum(irate(pg_stat_database_tup_fetched{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
           "format": "time_series",
@@ -1053,7 +1330,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
           "expr": "sum(irate(pg_stat_database_tup_inserted{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
           "format": "time_series",
@@ -1067,7 +1344,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
           "expr": "sum(irate(pg_stat_database_tup_updated{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
           "format": "time_series",
@@ -1081,7 +1358,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
           "expr": "sum(irate(pg_stat_database_tup_deleted{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
           "format": "time_series",
@@ -1094,7 +1371,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
           "expr": "sum(irate(pg_stat_database_tup_returned{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
           "format": "time_series",
@@ -1112,7 +1389,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1195,9 +1472,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "pg_wal_size_bytes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}/(1024*1024)",
+          "expr": "ccp_wal_activity_total_size_bytes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}/(1024*1024)",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1216,7 +1493,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1283,9 +1560,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum(rate(pg_stat_database_deadlocks{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(rate(ccp_stat_database_deadlocks{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\"}[5m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1297,9 +1574,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum(rate(pg_stat_database_conflicts{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(rate(ccp_stat_database_conflicts{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\"}[5m]))",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "DeadLocks",
@@ -1310,9 +1587,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum(irate(pg_stat_database_xact_commit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(irate(ccp_stat_database_xact_commit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\"}[5m]))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1325,9 +1602,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum(irate(pg_stat_database_xact_rollback{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(irate(ccp_stat_database_xact_rollback{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\"}[5m]))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1377,7 +1654,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -1435,14 +1712,29 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "pg_replication_lag_seconds{pg_cluster=\"[[cluster]]\"}",
+          "exemplar": false,
+          "expr": "ccp_replication_lag_size_bytes{pg_cluster=\"[[cluster]]\", role!=\"replica\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Bytes ({{replica}})",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "expr": "ccp_replication_lag_replay_time{pg_cluster=\"[[cluster]]\", role=\"replica\"}",
           "format": "time_series",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "Lag seconds ({{pod}})",
+          "legendFormat": "Time ({{ip}})",
           "refId": "A"
         }
       ],
@@ -1488,7 +1780,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1538,60 +1830,65 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum(pg_stat_bgwriter_buffers_alloc_total{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(ccp_stat_bgwriter_buffers_alloc{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "Allocated",
+          "metric": "ccp_stat_bgwriter_buffers_alloc",
           "refId": "A",
           "step": 2
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum(pg_stat_bgwriter_buffers_backend_total{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(ccp_stat_io_bgwriter_writes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}) or sum(ccp_stat_bgwriter_buffers_backend{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
           "format": "time_series",
           "intervalFactor": 2,
-          "legendFormat": "Backend",
+          "legendFormat": "Writes",
+          "metric": "ccp_stat_io_bgwriter_writes",
           "refId": "B",
           "step": 2
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum(pg_stat_bgwriter_buffers_backend_fsync_total{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(ccp_stat_io_bgwriter_fsyncs{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}) or sum(ccp_stat_bgwriter_buffers_backend_fsync{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "FSync",
+          "metric": "ccp_stat_io_bgwriter_fsyncs",
           "refId": "C",
           "step": 2
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum(pg_stat_bgwriter_buffers_checkpoint_total{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(ccp_stat_checkpointer_buffers_written{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}) or sum(ccp_stat_bgwriter_buffers_checkpoint{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "CheckPoint",
+          "metric": "ccp_stat_checkpointer_buffers_written",
           "refId": "D",
           "step": 2
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum(pg_stat_bgwriter_buffers_clean_total{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(ccp_stat_bgwriter_buffers_clean{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "Clean",
+          "metric": "ccp_stat_bgwriter_buffers_clean",
           "refId": "E",
           "step": 2
         }
@@ -1635,7 +1932,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1685,9 +1982,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum by (mode) (pg_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",mode=\"accessexclusivelock\"})",
+          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\",mode=\"accessexclusivelock\"})",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1699,9 +1996,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum by (mode) (pg_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",mode=\"exclusivelock\"})",
+          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\",mode=\"exclusivelock\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1712,9 +2009,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum by (mode) (pg_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",mode=\"rowexclusivelock\"})",
+          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\",mode=\"rowexclusivelock\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1725,9 +2022,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum by (mode) (pg_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",mode=\"sharerowexclusivelock\"})",
+          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\",mode=\"sharerowexclusivelock\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1738,9 +2035,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum by (mode) (pg_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",mode=\"shareupdateexclusivelock\"})",
+          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\",mode=\"shareupdateexclusivelock\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1751,9 +2048,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "sum by (mode) (pg_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",mode=\"accesssharelock\"})",
+          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\",mode=\"accesssharelock\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{mode}}",
@@ -1799,7 +2096,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1849,9 +2146,9 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "Prometheus"
           },
-          "expr": "pg_stat_database_blks_hit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\", datname!~\"template0\", datname!~\"template1\"}*100/(pg_stat_database_blks_hit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\", datname!~\"template0\", datname!~\"template1\"} + pg_stat_database_blks_read{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname!~\"template0\", datname!~\"template1\"})",
+          "expr": "ccp_stat_database_blks_hit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\", dbname!~\"template0\", dbname!~\"template1\"}*100/(ccp_stat_database_blks_hit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\", dbname!~\"template0\", dbname!~\"template1\"} + ccp_stat_database_blks_read{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname!~\"template0\", dbname!~\"template1\"})",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1905,7 +2202,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "prometheus"
+          "uid": "Prometheus"
         },
         "definition": "",
         "hide": 0,
@@ -1933,7 +2230,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "prometheus"
+          "uid": "Prometheus"
         },
         "definition": "label_values({pg_cluster=\"[[cluster]]\", exp_type!=\"pgbouncer\"},pod)",
         "hide": 0,
@@ -1961,7 +2258,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "prometheus"
+          "uid": "Prometheus"
         },
         "definition": "label_values(datname{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
         "hide": 0,
