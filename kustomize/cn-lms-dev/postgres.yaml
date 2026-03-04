@@ -21,14 +21,20 @@ spec:
   service:
     metadata:
       annotations:
+        metallb.io/address-pool: general-pool
         my-annotation: value1
       labels:
         my-label: value2
     type: LoadBalancer
+    externalTrafficPolicy: Local
     nodePort: 32001
   patroni:
     dynamicConfiguration:
       postgresql:
+        parameters:
+          tcp_keepalives_idle: 60
+          tcp_keepalives_interval: 10
+          tcp_keepalives_count: 5
         pg_hba:
           - host all ccp_monitoring 127.0.0.0/8 scram-sha-256
           - host all ccp_monitoring ::1/128 scram-sha-256

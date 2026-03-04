@@ -1856,7 +1856,7 @@
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "{{dbname}} - ({{pod}})",
+          "legendFormat": "{{datname}} - ({{pod}})",
           "refId": "A"
         }
       ],
@@ -1935,7 +1935,7 @@
           "type": "prometheus",
           "uid": "prometheus"
         },
-        "definition": "label_values({pg_cluster=\"[[cluster]]\", exp_type!=\"pgbouncer\"},pod)",
+        "definition": "label_values(pg_up{pg_cluster=\"[[cluster]]\"},pod)",
         "hide": 0,
         "includeAll": true,
         "label": "pod",
@@ -1943,7 +1943,7 @@
         "name": "pod",
         "options": [],
         "query": {
-          "query": "label_values({pg_cluster=\"[[cluster]]\", exp_type!=\"pgbouncer\"},pod)",
+          "query": "label_values(pg_up{pg_cluster=\"[[cluster]]\"},pod)",
           "refId": "PROMETHEUS-pod-Variable-Query"
         },
         "refresh": 1,
@@ -1963,7 +1963,7 @@
           "type": "prometheus",
           "uid": "prometheus"
         },
-        "definition": "label_values(datname{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+        "definition": "label_values({pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"},datname)",
         "hide": 0,
         "includeAll": true,
         "label": "Database",
@@ -1971,7 +1971,7 @@
         "name": "datname",
         "options": [],
         "query": {
-          "query": "label_values(datname{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "query": "label_values({pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"},datname)",
           "refId": "PROMETHEUS-datname-Variable-Query"
         },
         "refresh": 1,
