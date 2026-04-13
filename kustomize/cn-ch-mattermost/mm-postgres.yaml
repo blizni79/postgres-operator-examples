@@ -2,53 +2,92 @@ apiVersion: postgres-operator.crunchydata.com/v1
 kind: PostgresCluster
 metadata:
   name: mm-mattermost
+  namespace: postgres-operator
 spec:
   postgresVersion: 18
+
   instances:
     - name: instance1
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 2Gi
+
       dataVolumeClaimSpec:
-        accessModes:
-        - "ReadWriteOnce"
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: local-path
         resources:
           requests:
             storage: 10Gi
+
+      walVolumeClaimSpec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 5Gi
+
   users:
     - name: mm-mattermost
-      databases:
-        - mm-mattermost
-      options: 'SUPERUSER'
+      databases: [mm-mattermost]
+      options: "NOSUPERUSER NOCREATEROLE NOCREATEDB"
+      password:
+        type: AlphaNumeric
+
   service:
     metadata:
-      annotations:
-        my-annotation: mm-mattermost
       labels:
         my-label: mm-mattermost
     type: NodePort
     nodePort: 31002
-  monitoring:
-    pgmonitor:
-      exporter:
-        image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-exporter:ubi9-0.18.1-2550
-  backups:
-    pgbackrest:
-      repos:
-      - name: repo1
-        volume:
-          volumeClaimSpec:
-            accessModes:
-            - "ReadWriteOnce"
-            resources:
-              requests:
-                storage: 20Gi
-  proxy:
-    pgBouncer: {}
+
   patroni:
     dynamicConfiguration:
       postgresql:
+        parameters:
+          shared_buffers: "512MB"
+          effective_cache_size: "1536MB"
+          work_mem: "8MB"
+          maintenance_work_mem: "128MB"
+          max_connections: "200"
+          tcp_keepalives_idle: 60
+          tcp_keepalives_interval: 10
+          tcp_keepalives_count: 5
+          log_min_duration_statement: "1000"
         pg_hba:
-          - host all ccp_monitoring 127.0.0.0/8 scram-sha-256
-          - host all ccp_monitoring ::1/128 scram-sha-256
-          - host all ccp_monitoring all reject
-          - host mm-mattermost m-mattermost 10.1.77.8/32 md5
-          - local all all peer
-          - host all all 0.0.0.0/0 md5
+          - "host mm-mattermost mm-mattermost 10.244.0.0/16 scram-sha-256"
+          - "local all all peer"
+          - "host all all 0.0.0.0/0 md5"
+
+  proxy:
+    pgBouncer:
+      replicas: 1
+      config:
+        global:
+          pool_mode: transaction
+          max_client_conn: "500"
+          default_pool_size: "20"
+          server_idle_timeout: "600"
+          ignore_startup_parameters: "extra_float_digits"
+
+  backups:
+    pgbackrest:
+      global:
+        repo1-retention-full: "2"
+        repo1-retention-full-type: count
+        repo1-retention-diff: "7"
+      repos:
+        - name: repo1
+          schedules:
+            full: "0 1 * * 0"
+            differential: "0 1 * * 1-6"
+          volume:
+            volumeClaimSpec:
+              accessModes: ["ReadWriteOnce"]
+              storageClassName: local-path
+              resources:
+                requests:
+                  storage: 20Gi

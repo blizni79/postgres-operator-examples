@@ -2,57 +2,92 @@ apiVersion: postgres-operator.crunchydata.com/v1
 kind: PostgresCluster
 metadata:
   name: keycloak
+  namespace: postgres-operator
 spec:
   postgresVersion: 18
+
   instances:
     - name: instance1
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 2Gi
+
       dataVolumeClaimSpec:
-        accessModes:
-        - "ReadWriteOnce"
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: local-path
         resources:
           requests:
-            storage: 1Gi  # Zwiększone dla production
+            storage: 2Gi
+
+      walVolumeClaimSpec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 2Gi
+
   users:
     - name: keycloak
-      databases:
-        - keycloak
-  
+      databases: [keycloak]
+      options: "NOSUPERUSER NOCREATEROLE NOCREATEDB"
+      password:
+        type: AlphaNumeric
+
   service:
     metadata:
-      annotations:
-        service.beta.kubernetes.io/aws-load-balancer-type: nlb  # Lepsze dla production
       labels:
         app: keycloak-postgres
-    type: LoadBalancer
-    # Usuń nodePort - będzie przydzielony automatycznie
-  
+    type: ClusterIP
+
   patroni:
     dynamicConfiguration:
-      pg_hba:
-        - "hostssl all all all md5"  # Używaj SSL
-  
-  # monitoring:
-    # pgmonitor:
-    #   exporter: {}  # Disabled - postgres_exporter not supported for pg18, use OTel instead
-  
-  backups:
-    pgbackrest:
-      repos:
-      - name: repo1
-        schedules:
-          full: "0 2 * * 0"        # Pełny backup w niedzielę o 2:00
-          differential: "0 2 * * 1-6"  # Różnicowy backup codziennie o 2:00
-        volume:
-          volumeClaimSpec:
-            accessModes:
-            - "ReadWriteOnce"
-            resources:
-              requests:
-                storage: 1Gi  # Większe dla backupów production
-  
+      postgresql:
+        parameters:
+          shared_buffers: "512MB"
+          effective_cache_size: "1536MB"
+          work_mem: "8MB"
+          maintenance_work_mem: "128MB"
+          max_connections: "100"
+          tcp_keepalives_idle: 60
+          tcp_keepalives_interval: 10
+          tcp_keepalives_count: 5
+          log_min_duration_statement: "1000"
+        pg_hba:
+          - "host keycloak keycloak 10.244.0.0/16 scram-sha-256"
+          - "host all all 0.0.0.0/0 scram-sha-256"
+
+  # PgBouncer - session pooling wymagany przez Keycloak JDBC_PING2 / JGroups
   proxy:
     pgBouncer:
+      replicas: 1
       config:
         global:
           pool_mode: session
+          max_client_conn: "200"
+          default_pool_size: "25"
           server_idle_timeout: "600"
+          server_lifetime: "3600"
+          ignore_startup_parameters: "extra_float_digits"
+
+  backups:
+    pgbackrest:
+      global:
+        repo1-retention-full: "4"
+        repo1-retention-full-type: count
+        repo1-retention-diff: "14"
+      repos:
+        - name: repo1
+          schedules:
+            full: "0 2 * * 0"
+            differential: "0 2 * * 1-6"
+          volume:
+            volumeClaimSpec:
+              accessModes: ["ReadWriteOnce"]
+              storageClassName: local-path
+              resources:
+                requests:
+                  storage: 5Gi
