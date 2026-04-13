@@ -45,6 +45,10 @@ spec:
 
   patroni:
     dynamicConfiguration:
+      # Tolerancja na chwilowe braki połączenia z API serverem
+      ttl: 60           # domyślnie 30s - lider nie ustępuje tak szybko
+      loop_wait: 15     # domyślnie 10s
+      retry_timeout: 30 # domyślnie 10s - więcej czasu na retry API
       postgresql:
         parameters:
           # --- Memory (limit 2Gi) ---

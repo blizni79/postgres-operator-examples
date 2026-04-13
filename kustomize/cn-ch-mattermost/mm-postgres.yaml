@@ -46,6 +46,9 @@ spec:
 
   patroni:
     dynamicConfiguration:
+      ttl: 60
+      loop_wait: 15
+      retry_timeout: 30
       postgresql:
         parameters:
           shared_buffers: "512MB"
