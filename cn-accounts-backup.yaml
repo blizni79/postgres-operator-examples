@@ -1,0 +1,100 @@
+apiVersion: postgres-operator.crunchydata.com/v1
+kind: PostgresCluster
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"postgres-operator.crunchydata.com/v1beta1","kind":"PostgresCluster","metadata":{"annotations":{},"name":"cn-accounts-backup","namespace":"postgres-operator"},"spec":{"image":"registry.developers.crunchydata.com/crunchydata/crunchy-postgres-gis:ubi8-16.2-3.4-0","instances":[{"dataVolumeClaimSpec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"20Gi"}},"storageClassName":"local-path"},"name":"instance1"}],"monitoring":{"pgmonitor":{"exporter":{"image":"registry.developers.crunchydata.com/crunchydata/crunchy-postgres-exporter:ubi8-5.6.0-0"}}},"patroni":{"dynamicConfiguration":{"postgresql":{"parameters":{"log_timezone":"Europe/Warsaw","timezone":"Europe/Warsaw"},"pg_hba":["local all postgres peer","hostssl replication _crunchyrepl all cert","hostssl postgres _crunchyrepl all cert","host all _crunchyrepl all reject","host all ccp_monitoring 127.0.0.0/8 scram-sha-256","host all ccp_monitoring ::1/128 scram-sha-256","host all ccp_monitoring all reject","hostssl all _crunchypgbouncer all scram-sha-256","host all _crunchypgbouncer all reject","host all all 0.0.0.0/0 md5","hostssl all all all scram-sha-256","local all all md5"]}}},"postgresVersion":16,"proxy":{"pgBouncer":{"image":"registry.developers.crunchydata.com/crunchydata/crunchy-pgbouncer:ubi8-1.21-3"}},"service":{"metadata":{"annotations":{"my-annotation":"value1"},"labels":{"my-label":"value2"}},"type":"LoadBalancer"},"users":[{"databases":["postgres"],"name":"accounts","options":"SUPERUSER"}]}}
+  creationTimestamp: "2025-12-14T22:00:23Z"
+  finalizers:
+  - postgres-operator.crunchydata.com/finalizer
+  generation: 2
+  name: cn-accounts-backup
+  namespace: postgres-operator
+  resourceVersion: "131618011"
+  uid: 8dad13ca-7629-4162-814b-14848324959b
+spec:
+  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-gis:ubi8-16.2-3.4-0
+  instances:
+  - dataVolumeClaimSpec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
+      storageClassName: local-path
+    name: instance1
+    replicas: 1
+  monitoring:
+    pgmonitor:
+      exporter:
+        image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-exporter:ubi8-5.6.0-0
+  patroni:
+    dynamicConfiguration:
+      loop_wait: 10
+      retry_timeout: 60
+      ttl: 120
+      postgresql:
+        parameters:
+          log_timezone: Europe/Warsaw
+          timezone: Europe/Warsaw
+        pg_hba:
+        - local all postgres peer
+        - hostssl replication _crunchyrepl all cert
+        - hostssl postgres _crunchyrepl all cert
+        - host all _crunchyrepl all reject
+        - host all ccp_monitoring 127.0.0.0/8 scram-sha-256
+        - host all ccp_monitoring ::1/128 scram-sha-256
+        - host all ccp_monitoring all reject
+        - hostssl all _crunchypgbouncer all scram-sha-256
+        - host all _crunchypgbouncer all reject
+        - host all all 0.0.0.0/0 md5
+        - hostssl all all all scram-sha-256
+        - local all all md5
+    leaderLeaseDurationSeconds: 120
+    port: 8008
+    syncPeriodSeconds: 10
+  port: 5432
+  postgresVersion: 16
+  proxy:
+    pgBouncer:
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbouncer:ubi8-1.21-3
+      port: 5432
+      replicas: 1
+  service:
+    metadata:
+      annotations:
+        metallb.universe.tf/address-pool: general-pool
+      labels:
+        my-label: value2
+    type: LoadBalancer
+  users:
+  - databases:
+    - postgres
+    name: accounts
+    options: SUPERUSER
+status:
+  conditions:
+  - lastTransitionTime: "2026-04-01T15:35:58Z"
+    message: Deployment has minimum availability.
+    observedGeneration: 2
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: ProxyAvailable
+  databaseRevision: 5b8684d7c9
+  instances:
+  - name: instance1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+  monitoring:
+    exporterConfiguration: 7bd7bfd89
+  observedGeneration: 2
+  patroni:
+    systemIdentifier: "7583836946310541415"
+  pgbackrest: {}
+  proxy:
+    pgBouncer:
+      postgresRevision: 7c585f5d8c
+      readyReplicas: 1
+      replicas: 1
+  usersRevision: 6b7fcd77cf
