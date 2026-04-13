@@ -51,4 +51,8 @@ spec:
                 storage: 1Gi  # Większe dla backupów production
   
   proxy:
-    pgBouncer: {}
+    pgBouncer:
+      config:
+        global:
+          pool_mode: session
+          server_idle_timeout: "600"
