@@ -17,7 +17,6 @@ spec:
           cpu: 2000m
           memory: 4Gi
 
-      # Dane PG - local-path (block I/O, brak problemów NFS)
       dataVolumeClaimSpec:
         accessModes: ["ReadWriteOnce"]
         storageClassName: local-path
@@ -25,7 +24,6 @@ spec:
           requests:
             storage: 10Gi
 
-      # WAL na osobnym PVC - izolacja I/O, łatwiejszy recovery
       walVolumeClaimSpec:
         accessModes: ["ReadWriteOnce"]
         storageClassName: local-path
@@ -54,23 +52,46 @@ spec:
     dynamicConfiguration:
       postgresql:
         parameters:
-          # Memory - shared_buffers = ~25% RAM (limit 4Gi)
-          shared_buffers: "1GB"
-          effective_cache_size: "3GB"
+          # --- Memory (limit 4Gi) ---
+          shared_buffers: "1GB"               # 25% RAM
+          effective_cache_size: "3GB"         # 75% RAM
           work_mem: "16MB"
           maintenance_work_mem: "256MB"
-          # WAL
+          huge_pages: "off"
+
+          # --- WAL / Durability ---
+          synchronous_commit: "on"            # PRODUKCJA: bezpieczeństwo danych
           wal_buffers: "64MB"
+          max_wal_size: "4GB"
+          min_wal_size: "1GB"
+          checkpoint_timeout: "15min"
           checkpoint_completion_target: "0.9"
-          # Connections
+
+          # --- Connections ---
           max_connections: "200"
-          # Keepalives
           tcp_keepalives_idle: 60
           tcp_keepalives_interval: 10
           tcp_keepalives_count: 5
-          # Logging
+
+          # --- Autovacuum ---
+          autovacuum_max_workers: "4"
+          autovacuum_naptime: "30s"
+          autovacuum_vacuum_scale_factor: "0.05"
+          autovacuum_analyze_scale_factor: "0.025"
+          autovacuum_vacuum_cost_limit: "400"
+
+          # --- Parallelism ---
+          max_worker_processes: "8"
+          max_parallel_workers: "4"
+          max_parallel_workers_per_gather: "2"
+
+          # --- Logging ---
           log_min_duration_statement: "1000"
-          synchronous_commit: "off"
+          log_checkpoints: "on"
+          log_connections: "off"
+          log_lock_waits: "on"
+          deadlock_timeout: "1s"
+
         pg_hba:
           - "host cn-lms-prod cn-lms-prod 10.244.0.0/16 scram-sha-256"
           - "host all all 0.0.0.0/0 md5"

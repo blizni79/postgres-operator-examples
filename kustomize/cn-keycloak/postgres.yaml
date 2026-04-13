@@ -47,20 +47,43 @@ spec:
     dynamicConfiguration:
       postgresql:
         parameters:
+          # --- Memory (limit 2Gi) ---
           shared_buffers: "512MB"
           effective_cache_size: "1536MB"
           work_mem: "8MB"
           maintenance_work_mem: "128MB"
+          huge_pages: "off"
+
+          # --- WAL / Durability ---
+          synchronous_commit: "on"
+          wal_buffers: "32MB"
+          max_wal_size: "2GB"
+          min_wal_size: "512MB"
+          checkpoint_timeout: "15min"
+          checkpoint_completion_target: "0.9"
+
+          # --- Connections ---
           max_connections: "100"
           tcp_keepalives_idle: 60
           tcp_keepalives_interval: 10
           tcp_keepalives_count: 5
+
+          # --- Autovacuum ---
+          autovacuum_max_workers: "3"
+          autovacuum_naptime: "30s"
+          autovacuum_vacuum_scale_factor: "0.05"
+          autovacuum_analyze_scale_factor: "0.025"
+
+          # --- Logging ---
           log_min_duration_statement: "1000"
+          log_lock_waits: "on"
+          deadlock_timeout: "1s"
+
         pg_hba:
           - "host keycloak keycloak 10.244.0.0/16 scram-sha-256"
           - "host all all 0.0.0.0/0 scram-sha-256"
 
-  # PgBouncer - session pooling wymagany przez Keycloak JDBC_PING2 / JGroups
+  # Session pooling wymagany przez Keycloak JDBC_PING2 / JGroups
   proxy:
     pgBouncer:
       replicas: 1

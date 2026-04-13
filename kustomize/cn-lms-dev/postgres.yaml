@@ -52,16 +52,38 @@ spec:
     dynamicConfiguration:
       postgresql:
         parameters:
+          # --- Memory (limit 2Gi) ---
           shared_buffers: "512MB"
           effective_cache_size: "1536MB"
           work_mem: "8MB"
           maintenance_work_mem: "128MB"
+          huge_pages: "off"
+
+          # --- WAL (dev: off dla szybkości, akceptowalna utrata danych) ---
+          synchronous_commit: "off"
+          wal_buffers: "32MB"
+          max_wal_size: "2GB"
+          min_wal_size: "512MB"
+          checkpoint_timeout: "15min"
+          checkpoint_completion_target: "0.9"
+
+          # --- Connections ---
           max_connections: "200"
           tcp_keepalives_idle: 60
           tcp_keepalives_interval: 10
           tcp_keepalives_count: 5
+
+          # --- Autovacuum ---
+          autovacuum_max_workers: "2"
+          autovacuum_naptime: "60s"
+          autovacuum_vacuum_scale_factor: "0.1"
+          autovacuum_analyze_scale_factor: "0.05"
+
+          # --- Logging ---
           log_min_duration_statement: "2000"
-          synchronous_commit: "off"
+          log_lock_waits: "on"
+          deadlock_timeout: "1s"
+
         pg_hba:
           - "host cn-lms-dev cn-lms-dev 10.244.0.0/16 scram-sha-256"
           - "host all all 0.0.0.0/0 md5"
