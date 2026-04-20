@@ -50,6 +50,7 @@ spec:
 
   patroni:
     leaderLeaseDurationSeconds: 60
+    syncPeriodSeconds: 30
     dynamicConfiguration:
       ttl: 120
       loop_wait: 30
