@@ -34,7 +34,7 @@ spec:
   users:
     - name: cn-lms-prod
       databases: [cn-lms-prod]
-      options: "NOSUPERUSER NOCREATEROLE NOCREATEDB"
+      options: "NOSUPERUSER CREATEROLE NOCREATEDB"
       password:
         type: AlphaNumeric
 
