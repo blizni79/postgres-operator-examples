@@ -471,14 +471,14 @@
           "type": "prometheus",
           "uid": "prometheus"
         },
-        "definition": "label_values({pg_cluster=\"[[cluster]]\", exp_type!=\"pgbouncer\"},role)",
+        "definition": "label_values(pg_up{pg_cluster=\"[[cluster]]\"},role)",
         "hide": 0,
         "includeAll": false,
         "multi": false,
         "name": "role",
         "options": [],
         "query": {
-          "query": "label_values({pg_cluster=\"[[cluster]]\", exp_type!=\"pgbouncer\"},role)",
+          "query": "label_values(pg_up{pg_cluster=\"[[cluster]]\"},role)",
           "refId": "PROMETHEUS-role-Variable-Query"
         },
         "refresh": 1,

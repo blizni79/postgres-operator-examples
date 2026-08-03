@@ -23,6 +23,7 @@ spec:
   service:
     metadata:
       annotations:
+        metallb.io/address-pool: general-pool
         my-annotation: value1
       labels:
         my-label: value2

@@ -22,7 +22,7 @@ spec:
         - name: PGO_NAMESPACE
           valueFrom: { fieldRef: { fieldPath: metadata.namespace } }
         - name: CRUNCHY_DEBUG
-          value: "true"
+          value: "false"
         - name: RELATED_IMAGE_POSTGRES_15
           value: image-crunchy-postgres-15
         - name: RELATED_IMAGE_POSTGRES_15_GIS_3.3
