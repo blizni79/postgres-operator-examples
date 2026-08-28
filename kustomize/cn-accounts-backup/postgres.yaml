@@ -3,7 +3,7 @@ kind: PostgresCluster
 metadata:
   name: cn-accounts-backup
 spec:
-  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-gis:ubi8-16.2-3.4-0
+  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-gis:ubi9-16.11-3.4-2547
   postgresVersion: 16
   instances:
     - name: instance1
@@ -51,11 +51,11 @@ spec:
   monitoring:
     pgmonitor:
       exporter:
-        image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-exporter:ubi8-5.6.0-0
+        image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-exporter:ubi9-0.18.1-2621
   
   # backups:
   #   pgbackrest:
-  #     image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.51-1
+  #     image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi9-2.56.0-2550
   #     repos:
   #     - name: repo1
   #       schedules:
@@ -70,4 +70,4 @@ spec:
   #               storage: 20Gi
   proxy:
     pgBouncer:
-      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbouncer:ubi8-1.21-3
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbouncer:ubi9-1.25-2550
