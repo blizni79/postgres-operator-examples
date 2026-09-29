@@ -50,9 +50,9 @@ spec:
 
   patroni:
     dynamicConfiguration:
-      ttl: 60
-      loop_wait: 15
-      retry_timeout: 30
+      ttl: 30
+      loop_wait: 10
+      retry_timeout: 10
       postgresql:
         parameters:
           # --- Memory (limit 4Gi) ---
